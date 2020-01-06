@@ -1,6 +1,8 @@
 package com.clive.bean;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TbItem implements Serializable{
@@ -29,7 +31,7 @@ public class TbItem implements Serializable{
 	public Long getId() {
 		return id;
 	}
-
+	
 	public void setId(Long id) {
 		this.id = id;
 	}

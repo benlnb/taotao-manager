@@ -28,4 +28,16 @@
 		<!-- jsp后缀 -->
 		<property name="suffix" value=".jsp" />
 	</bean>
+	<!-- 
+	json处理器适配器 
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>
+			</list>
+		</property>
+	</bean>
+	 -->
 </beans>
