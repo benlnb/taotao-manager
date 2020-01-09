@@ -18,6 +18,7 @@
 	src="${pageContext.request.contextPath }/js/jquery.ztree.excheck.min.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/js/jquery.ztree.exedit.min.js"></script>
+	
 </head>
 <body>
 
@@ -27,6 +28,7 @@
 	</fieldset>
 
 	<form class="layui-form" action="" lay-filter="example">
+	<!-- <form class="layui-form" action="" lay-filter="example" enctype="multipart/form-data">  -->
 
 		<div class="layui-form-item" id="layerDemo">
 			<label class="layui-form-label">商品分类</label>
@@ -74,12 +76,28 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">图片</label>
+			<label class="layui-form-label">状态</label>
 			<div class="layui-input-block">
-				<input type="text" name="image" lay-verify="required"
-					autocomplete="off" placeholder="请输入标题" class="layui-input">
+				<input type="radio" name="status" value="1" title="上架" checked>
+				<input type="radio" name="status" value="0" title="下架">
 			</div>
 		</div>
+
+		<div class="layui-form-item">
+			<label class="layui-form-label">图片</label> <input type="hidden"
+				name="image" class="multiple_show_img" value="">
+			<div class="layui-upload">
+				<button type="button" class="layui-btn" id="multiple_img_upload">多图片上传</button>
+				<blockquote class="layui-elem-quote layui-quote-nm"
+					style="margin-top: 10px;margin-left: 110px;">
+					预览：
+					<div class="layui-upload-list" id="div-slide_show"></div>
+				</blockquote>
+			</div>
+		</div>
+
+
+
 		<div class="layui-form-item layui-form-text">
 			<label class="layui-form-label">商品描述</label>
 			<div class="layui-input-block">
@@ -88,19 +106,28 @@
 		</div>
 		<div class="layui-form-item">
 			<div class="layui-input-block">
-				<button type="submit" class="layui-btn" lay-submit=""
+				<button type="submit" class="layui-btn" id="example1" lay-submit=""
 					lay-filter="example1">立即提交</button>
 				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 			</div>
 		</div>
 	</form>
 
+
+
 	<script>
+	
+	
+	
+		/*
+			表单提交
+		*/
 		layui.use([ 'form' ], function() {
 			var form = layui.form;
+			form.render('radio');
 			//监听提交
 			form.on('submit(example1)', function(data) {
-
+				
 				$.ajax({
 					url : '/item/addItem',
 					async: false,
@@ -113,15 +140,19 @@
 					},
 					error : function(data) {
 						layer.msg("提交失败");
-						//$("#content").load("/jsp/addItem.jsp");
 					}
 				});
 			return false;
 			});
 		});
 
-		layui.use('layer', function() { //独立版的layer无需执行这一句
-			var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+		
+		
+		/*
+			弹出层
+		*/
+		layui.use('layer', function() { 
+			var $ = layui.jquery, layer = layui.layer;
 
 			//触发事件
 			var active = {
@@ -147,7 +178,7 @@
 					});
 				}
 			};
-
+			//按钮点击
 			$('#layerDemo .layui-btn').on('click', function() {
 				var othis = $(this), method = othis.data('method');
 				active[method] ? active[method].call(this, othis) : '';
@@ -155,10 +186,13 @@
 
 		});
 
+		
+		
+		
+		
 		/*
-		 zTree
+		 	zTree
 		 */
-
 		var setting = {
 			async : {
 				enable : true,
@@ -174,12 +208,8 @@
 			},
 			callback : {
 				onClick : zTreeOnClick,
-			//beforeExpand: beforeExpand,
-			//onAsyncSuccess: onAsyncSuccess,
-			//onAsyncError: onAsyncError
 			}
 		};
-
 		/*
 			分类树： 点击节点
 		 */
@@ -190,76 +220,97 @@
 				layer.closeAll();
 			}
 		};
-
-		/*
-		var log, className = "dark",
-		startTime = 0, endTime = 0, perCount = 100, perTime = 100;
-		
-		function beforeExpand(treeId, treeNode) {
-			if (!treeNode.isAjaxing) {
-				startTime = new Date();
-				treeNode.times = 1;
-				ajaxGetNodes(treeNode, "refresh");
-				return true;
-			} else {
-				alert("zTree 正在下载数据中，请稍后展开节点。。。");
-				return false;
-			}
-		}
-		function onAsyncSuccess(event, treeId, treeNode, msg) {
-			if (!msg || msg.length == 0) {
-				return;
-			}
-			var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
-			totalCount = treeNode.count;
-			if (treeNode.children.length < totalCount) {
-				setTimeout(function() {ajaxGetNodes(treeNode);}, perTime);
-			} else {
-				treeNode.icon = "";
-				zTree.updateNode(treeNode);
-				zTree.selectNode(treeNode.children[0]);
-				endTime = new Date();
-				var usedTime = (endTime.getTime() - startTime.getTime())/1000;
-				className = (className === "dark" ? "":"dark");
-				showLog("[ "+getTime()+" ]&nbsp;&nbsp;treeNode:" + treeNode.name );
-				showLog("加载完毕，共进行 "+ (treeNode.times-1) +" 次异步加载, 耗时："+ usedTime + " 秒");
-			}
-		}
-		function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
-			var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-			alert("异步获取数据出现异常。");
-			treeNode.icon = "";
-			zTree.updateNode(treeNode);
-		}
-		function ajaxGetNodes(treeNode, reloadType) {
-			var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-			if (reloadType == "refresh") {
-				treeNode.icon = "${pageContext.request.contextPath }/css/zTreeStyle/img/loading.gif";
-				zTree.updateNode(treeNode);
-			}
-			zTree.reAsyncChildNodes(treeNode, reloadType, true);
-		}
-		function showLog(str) {
-			if (!log) log = $("#log");
-			log.append("<li class='"+className+"'>"+str+"</li>");
-			if(log.children("li").length > 4) {
-				log.get(0).removeChild(log.children("li")[0]);
-			}
-		}
-		function getTime() {
-			var now= new Date(),
-			h=now.getHours(),
-			m=now.getMinutes(),
-			s=now.getSeconds(),
-			ms=now.getMilliseconds();
-			return (h+":"+m+":"+s+ " " +ms);
-		}
-		 */
-
 		//初始化zTree树
 		$(document).ready(function() {
 			$.fn.zTree.init($("#treeDemo"), setting);
 		});
+		
+		
+		
+		
+		
+		/*
+			图片上传
+		*/
+		var multiple_images = [];//图片容器
+		layui.use('upload', function () {
+		        var upload = layui.upload;
+				//多图片上传
+		        upload.render({
+		            elem: '#multiple_img_upload'
+		            ,url: '/item/picsUpload'
+		            //,bindAction: '#example1'
+		            ,auto: true
+		            ,multiple: true
+		            ,drag: true
+		            ,before: function(obj){
+		                //预读本地文件示例，不支持ie8
+		                obj.preview(function(index, file, result){
+		                    $('#div-slide_show').append('<img height="120" width="120" src="'+ result +'" alt="'+ file.name
+		                        +'" title="点击删除" class="layui-upload-img" id="delMultipleImgs" value="this" οnclick="delMultipleImgs(this)">')
+		                });
+		            }
+		            ,done: function(res){
+		            	
+		                //如果上传成功
+		                if (res.status == 1) {
+		                    //追加图片成功追加文件名至图片容器
+		                    multiple_images.push(res.data.url);
+		                    $('.multiple_show_img').val(multiple_images);
+		                }else {
+		                	alert("aaa");
+		                	//提示信息
+		                    dialog.tip(res.message);
+		                }
+		            }
+		        });
+
+		    });
+		
+		
+		//单击图片删除图片 【注册全局函数】
+		$(document).on('click','#delMultipleImgs',function(){
+			var subscript=$("#div-slide_show.img").index(this);
+			var i = $("#div-slide_show.img");
+			alert("subscript:"+subscript+"-----#div-slide_show.img:"+i);
+			alert("图片容器："+multiple_images);
+			//alert(this.src);
+	        //删除图片
+	        this.remove();
+	        //删除数组
+	        multiple_images.splice(subscript, 1);
+	        //重新排序
+	        multiple_images.sort();
+	        $('.multiple_show_img').val(multiple_images);
+	        //console.log("multiple_images",multiple_images);
+	        //返回
+	        return ;
+		});
+		
+		
+		
+	      
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	</script>
 	<div hidden id="hiddenZtree" class="zTreeDemoBackground"
 		style="margin-left: 40px; margin-top: 20px;">

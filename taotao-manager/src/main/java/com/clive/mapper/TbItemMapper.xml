@@ -4,10 +4,70 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.clive.mapper.TbItemMapper">
-	<select id="findTbItemById" parameterType="long"
-		resultType="com.clive.bean.TbItem">
-		SELECT * FROM tbitem WHERE id = #{id}
+
+
+
+
+
+	<select id="findCid1ByCat"
+		resultType="int">
+		SELECT id FROM tbitemcat WHERE name Like CONCAT('%',#{searchContent},'%')
 	</select>
+	<select id="findCid23ByCat"
+		resultType="int">
+		SELECT id FROM tbitemcat WHERE parentId in
+		<foreach collection="cIds" item="cId" open="(" close=")" separator=",">
+			#{cId}
+		</foreach>
+	</select>
+	<select id="findCid4ByCat"
+		resultType="int">
+		SELECT id FROM tbitemcat WHERE isParent = 0 and id in
+		<foreach collection="cIds" item="cId" open="(" close=")" separator=",">
+			#{cId}
+		</foreach>
+	</select>
+	
+	<select id="findTbItemSize"
+		resultType="int">
+		select count(*) from tbitem where
+        concat(IFNULL(title,''),IFNULL(sellPoint,''))
+        like CONCAT (#{select_title},#{select_des})
+	</select>
+	<select id="findTbItemBy"
+		resultType="com.clive.bean.TbItem">
+		select * from tbitem where
+        concat(IFNULL(title,''),IFNULL(sellPoint,''))
+        like CONCAT (#{select_title},#{select_des})
+         LIMIT #{page},#{limit};
+	</select>
+	
+	<select id="findTbItemSizeWithCids"
+		resultType="int">
+		select count(*) from tbitem where
+        concat(IFNULL(title,''),IFNULL(sellPoint,''))
+        like CONCAT (#{select_title},#{select_des})
+        and cid in 
+        <foreach collection="cIds" item="cId" open="(" close=")" separator=",">
+			#{cId}
+		</foreach>
+	</select>
+	<select id="findTbItemByWithCids"
+		resultType="com.clive.bean.TbItem">
+		select * from tbitem where
+        concat(IFNULL(title,''),IFNULL(sellPoint,''))
+        like CONCAT (#{select_title},#{select_des})
+        and cid in 
+        <foreach collection="cIds" item="cId" open="(" close=")" separator=",">
+			#{cId}
+		</foreach>
+         LIMIT #{page},#{limit};
+	</select>
+	
+	
+
+
+
 
 	<select id="findTbItemAll" parameterType="int" resultType="com.clive.bean.TbItem">
 		SELECT * FROM tbitem LIMIT #{page},#{limit}
@@ -18,23 +78,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		tbitem
 	</select>
 	
-	<update id="delete" parameterType="list">
-		update tbitem set status = 2 where id in
-		<foreach collection="list" item="id" open="(" close=")" separator=",">
+	<update id="delete">
+		update tbitem set status = 2,updated = #{updated} where id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="putOn" parameterType="list">
-		update tbitem set status = 1 where id in
-		<foreach collection="list" item="id" open="(" close=")" separator=",">
+		update tbitem set status = 1,updated = #{updated} where id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="putOff" parameterType="list">
-		update tbitem set status = 0 where id in
-		<foreach collection="list" item="id" open="(" close=")" separator=",">
+		update tbitem set status = 0,updated = #{updated} where id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
 			#{id}
 		</foreach>
 	</update>
@@ -46,5 +106,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="addItem" parameterType="com.clive.bean.TbItem">
 		insert into tbitem (title,sellPoint,price,num,barcode,image,cid,status,created,updated) values (#{title}, #{sellPoint}, #{price}, #{num}, #{barcode}, #{image}, #{cid}, #{status}, #{created}, #{updated})
 	</insert>
+	
+	
+	<select id="findCategoryNameParentId0" resultType="String">
+		SELECT name FROM tbitemcat where parentId = 0
+	</select>
+	
+	<select id="findCategoryIdName" resultType="int">
+		SELECT id FROM tbitemcat where name = #{cName} and parentId = 0
+	</select>
+	
+	<select id="findCid2ByCid"
+		resultType="int">
+		SELECT id FROM tbitemcat WHERE parentId = #{cId}
+	</select>
+	
+	<select id="findCid3ByCid2"
+		resultType="int">
+		SELECT id FROM tbitemcat WHERE parentId in
+		<foreach collection="cIds2" item="cId" open="(" close=")" separator=",">
+			#{cId}
+		</foreach>
+	</select>
+	
+	<select id="findCountByCid3"
+		resultType="int">
+		SELECT count(*) FROM tbitem WHERE cid in
+		<foreach collection="cIds3" item="cId" open="(" close=")" separator=",">
+			#{cId}
+		</foreach>
+	</select>
+	
+	
+	<select id="findCustumerCountByDate"
+		resultType="int">
+		select count(*) from tbuser where created BETWEEN #{date1} AND #{date2}
+	</select>
 	
 </mapper>

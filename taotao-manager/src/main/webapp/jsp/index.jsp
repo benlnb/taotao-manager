@@ -7,11 +7,16 @@
 <title>淘淘商城后台</title>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath }/layui/css/layui.css">
+<style type="text/css">
+	a{color:#009688;} 
+	a:visited {text-decoration:none;} 
+	a:hover {color:	#48D1CC;} 
+</style>
 </head>
 <body class="layui-layout-body">
 	<div class="layui-layout layui-layout-admin">
 		<div class="layui-header">
-			<div class="layui-logo">淘淘商城后台</div>
+			<div class="layui-logo"><a href="${pageContext.request.contextPath }" >淘淘商城后台</a></div>
 			<!-- 头部区域（可配合layui已有的水平导航） -->
 
 			<ul class="layui-nav layui-layout-right">
@@ -114,7 +119,19 @@
 			<!-- 内容主体区域
 				 $("#content").load("/jsp/showItem.jsp");
 			 -->
-			<div id="content" style="padding: 15px;">内容主体区域</div>
+			<div id="content" style="padding: 15px;">
+				<div style="float:left;margin-top:30px;" class="">
+					<h2 style="color:#009688;width: 650px;text-align:center;margin-bottom:30px;">近7天用户注册统计</h2>
+					<div id="echart2" style="width: 650px;height:420px;">
+					</div>
+				</div>
+				<div style="float:left;margin-top:30px;" class="">
+					<h2 style="color:#009688;width: 650px;text-align:center;margin-bottom:30px;">商品分类统计</h2>
+					<div id="echart1" style="width: 650px;height:420px;">
+					</div>
+				</div>
+			</div>
+			
 		</div>
 
 		<div class="layui-footer">
@@ -123,8 +140,9 @@
 		</div>
 	</div>
 	<script src="${pageContext.request.contextPath }/layui/layui.js"></script>
-	<script
-		src="${pageContext.request.contextPath }/js/jquery-2.1.0.min.js"></script>
+	<script src="${pageContext.request.contextPath }/js/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath }/js/echarts-en.common.min.js"></script>	
+		
 	<script>
 //JavaScript代码区域
 layui.use('element', function(){
@@ -140,6 +158,37 @@ $("#addItemCat").click(function(){
 $("#addItem").click(function(){
 	$("#content").load("/jsp/addItem.jsp");
 })
+
+
+
+/*
+	echart
+*/
+$(function(){
+	
+	$.ajax({
+		type: "POST",
+		url: "/item/echart1",
+		contentType: "application/json", //必须有  
+		dataType: "json", //表示返回值类型，不必须  
+		success: function(msg){
+			//console.log(msg);
+			echarts.init(document.getElementById('echart1')).setOption(msg);
+		}
+	});
+	
+	$.ajax({
+		type: "POST",
+		url: "/item/echart2",
+		contentType: "application/json", //必须有  
+		dataType: "json", //表示返回值类型，不必须  
+		success: function(msg){
+			console.log(msg);
+			echarts.init(document.getElementById('echart2')).setOption(msg);
+		}
+	});
+})
+
 </script>
 </body>
 </html>

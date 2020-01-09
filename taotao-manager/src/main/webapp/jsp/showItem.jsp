@@ -3,21 +3,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>layui在线调试</title>
-  <link rel="stylesheet" href="${pageContext.request.contextPath }/layui/dist/css/layui.css?t=1575889601627" media="all">
-
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<title>layui在线调试</title>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath }/layui/dist/css/layui.css?t=1575889601627"
+	media="all">
 </head>
 <body>
-  <div class="layui-input-block" style="margin-left:1px;float: left; position: relative;">
-    <input style="width: 300px;" type="text" id="select_orderId" name="select_orderId" lay-verify="required" placeholder="请输入商品Id" autocomplete="off" class="layui-input">
-  </div>
-    <button class="layui-btn" lay-submit="" id="searchBtn" data-type="getInfo" style="float: left;">搜索</button>
-	<div style="margin-top:50px"></div>
- 
-<table class="layui-hide" id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
-<script type="text/html" id="roleTpl">
+	<div class="layui-input-block"
+		style="margin-left: 0px; float: left; position: relative;">
+		<input style="width: 150px;" type="text" id="select_title"
+			name="select_title" lay-verify="required" placeholder="请输入标题"
+			autocomplete="off" class="layui-input sss">
+	</div>
+	<div class="layui-input-block"
+		style="margin-left: 0px; float: left; position: relative;">
+		<input style="width: 150px;" type="text" id="select_cat"
+			name="select_title" lay-verify="required" placeholder="请输入分类"
+			autocomplete="off" class="layui-input sss">
+	</div>
+	<div class="layui-input-block"
+		style="margin-left: 0px; float: left; position: relative;">
+		<input style="width: 150px;" type="text" id="select_des"
+			name="select_des" lay-verify="required" placeholder="请输入描述"
+			autocomplete="off" class="layui-input sss">
+	</div>
+	<button class="layui-btn" lay-submit="" id="searchBtn"
+		data-type="getInfo" style="float: left;">搜索</button>
+	<div style="margin-top: 50px"></div>
+
+	<table class="layui-hide" id="demo" lay-filter="test"
+		lay-data="{id: 'idTest'}"></table>
+	<script type="text/html" id="roleTpl">
 		{{# if (d.status=== 1) { }}   
   		正常
 		{{# } else if (d.status=== 0){ }}
@@ -28,21 +47,22 @@
 </script>
 
 
-<script type="text/html" id="toolbarDemo">
+	<script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
     <button class="layui-btn layui-btn-sm" lay-event="del" data-type="getCheckData">批量删除</button>
     <button class="layui-btn layui-btn-sm" lay-event="putOn" data-type="getCheckData">上架</button>
     <button class="layui-btn layui-btn-sm" lay-event="putOff" data-type="getCheckData">下架</button>
   </div>
 </script>
- 
-<script type="text/html" id="barDemo">
+
+	<script type="text/html" id="barDemo">
   <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
   <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
-              
-<script src="${pageContext.request.contextPath }/layui/dist/layui.js?t=1575889601627"></script>
-<script>
+
+	<script
+		src="${pageContext.request.contextPath }/layui/dist/layui.js?t=1575889601627"></script>
+	<script>
 layui.config({
   version: '1575889601627' //为了更新 js 缓存，可忽略
 });
@@ -218,8 +238,9 @@ layui.use(['laypage', 'layer', 'table', 'element'], function(){
   
   
   
-  
-  
+  /*
+  		搜索
+  */
   $('#searchBtn').on('click',function(){
 	    var type = $(this).data('type');
 	    active[type] ? active[type].call(this) : '';
@@ -227,25 +248,37 @@ layui.use(['laypage', 'layer', 'table', 'element'], function(){
 	// 点击获取数据
 	var  active = {
 	    getInfo: function () {
-	        var orderId=$('#select_orderId').val();
-	        if (orderId) {
+	        var select_title=$('#select_title').val();
+	        var select_cat=$('#select_cat').val();
+	        var select_des=$('#select_des').val();
+	        if (select_title||select_cat||select_des) {
 	            //var index = layer.msg('查询中，请稍候...',{icon: 16,time:false,shade:0});
 	            setTimeout(function(){
 	                table.reload('idTest', { //表格的id
-	                    url:'/item/itemId',
+	                    url:'/item/search',
+	                    
 	                    where: {
-	                        'itemId':$.trim(orderId)
-	                    }
+	                        //'searchContent':$.trim(orderId),
+	                        'select_title':$.trim(select_title),
+	                        'select_cat':$.trim(select_cat),
+	                        'select_des':$.trim(select_des),
+	                        //'page': 1
+	                    },method: 'post'
+                    	,page: {
+                    		curr: 1 //重新从第 1 页开始
+                    	}
 	                });
 	                layer.close(index);
 	            },800);
+	            
+	            
 	        } else {
-	            layer.msg("请输入编号");
+	            layer.msg("请输入");
 	        }
 	    },
 	};
 	//监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
-	$("#select_orderId").bind("keyup", function (e) {
+	$(".sss").bind("keyup", function (e) {
 	    if (e.keyCode == 13) {
 	        var type = "getInfo";
 	        active[type] ? active[type].call(this) : '';
