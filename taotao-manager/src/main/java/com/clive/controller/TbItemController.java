@@ -116,23 +116,32 @@ public class TbItemController {
 	/*
 	 * 多图上传
 	 */
-//	@RequestMapping("/picsUpload")
-//	//requestParam要写才知道是前台的那个数组
-//	public String filesUpload(@RequestParam("myfiles") MultipartFile[] files,
-//			HttpServletRequest request) {
-//		List<String> list = new ArrayList<String>();
-//		if (files != null && files.length > 0) {
-//			for (int i = 0; i < files.length; i++) {
-//				MultipartFile file = files[i];
-//				// 保存文件
-//				list = saveFile(request, file, list);
-//			}
-//		}
-//		//写着测试，删了就可以
-//		for (int i = 0; i < list.size(); i++) {
-//			System.out.println("集合里面的数据" + list.get(i));
-//		}
-//		return "index";//跳转的页面
-//	}
+	@RequestMapping("/picsUpload")
+	//requestParam要写才知道是前台的那个数组
+	public String filesUpload(@RequestParam("multiple_images") MultipartFile[] files,
+			HttpServletRequest request) {
+		System.out.println("fileslength：：："+files.length);
+		for (MultipartFile multipartFile : files) {
+			System.out.println("multipartFile：：："+multipartFile);
+		}
+		System.out.println("进入");
+		
+		System.out.println("进入");
+		System.out.println("进入");
+		System.out.println("进入");
+		List<String> list = new ArrayList<String>();
+		if (files != null && files.length > 0) {
+			for (int i = 0; i < files.length; i++) {
+				MultipartFile file = files[i];
+				// 保存文件
+				//list = saveFile(request, file, list);
+			}
+		}
+		//写着测试，删了就可以
+		for (int i = 0; i < list.size(); i++) {
+			System.out.println("集合里面的数据" + list.get(i));
+		}
+		return "index";//跳转的页面
+	}
 
 }

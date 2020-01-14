@@ -18,13 +18,17 @@
 	src="${pageContext.request.contextPath }/js/jquery.ztree.excheck.min.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/js/jquery.ztree.exedit.min.js"></script>
-	
+<style type="text/css">
+	body {
+		background-color: #FFFFFF;
+	}
+</style>
 </head>
 <body>
 
 	<fieldset class="layui-elem-field layui-field-title"
 		style="margin-top: 20px;">
-		<legend class="layui-anim layui-anim-scale">商品添加</legend>
+		<legend class="">商品添加</legend>
 	</fieldset>
 
 	<form class="layui-form" action="" lay-filter="example">
@@ -87,7 +91,8 @@
 			<label class="layui-form-label">图片</label> <input type="hidden"
 				name="image" class="multiple_show_img" value="">
 			<div class="layui-upload">
-				<button type="button" class="layui-btn" id="multiple_img_upload">多图片上传</button>
+				<button type="button" class="layui-btn" id="multiple_img_upload">选择图片</button>
+				<button type="button" class="layui-btn" id="startUpload">开始上传</button>
 				<blockquote class="layui-elem-quote layui-quote-nm"
 					style="margin-top: 10px;margin-left: 110px;">
 					预览：
@@ -239,16 +244,24 @@
 		        upload.render({
 		            elem: '#multiple_img_upload'
 		            ,url: '/item/picsUpload'
-		            //,bindAction: '#example1'
-		            ,auto: true
+		            ,auto: false
 		            ,multiple: true
 		            ,drag: true
-		            ,before: function(obj){
-		                //预读本地文件示例，不支持ie8
+		            ,bindAction: '#startUpload'
+		            ,choose:function(obj){
+		            	var files = this.files = obj.pushFile();
+		            	
+		            	//预读本地文件示例，不支持ie8
 		                obj.preview(function(index, file, result){
-		                    $('#div-slide_show').append('<img height="120" width="120" src="'+ result +'" alt="'+ file.name
+		                    $('#div-slide_show').append('<img style="margin-right:10px" height="120" width="120" src="'+ result +'" alt="'+ file.name
 		                        +'" title="点击删除" class="layui-upload-img" id="delMultipleImgs" value="this" οnclick="delMultipleImgs(this)">')
 		                });
+		                multiple_images.push(obj.data.url);
+	                    $('.multiple_show_img').val(multiple_images);
+	                    alert(obj.data.url);
+		            }
+		            ,before: function(obj){
+		                
 		            }
 		            ,done: function(res){
 		            	

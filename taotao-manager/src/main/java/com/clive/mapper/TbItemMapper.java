@@ -51,8 +51,6 @@ public interface TbItemMapper {
 	
 	int findCategoryIdName(@Param("cName") String cName);
 	
-	List<Integer> findCid2ByCid(@Param("cId") int cId);
-	
 	List<Integer> findCid3ByCid2(@Param("cIds2") List<Integer> cIds2);
 	
 	Integer findCountByCid3(@Param("cIds3") List<Integer> cIds3);

@@ -44,6 +44,7 @@ public class TbItemServiceImpl implements TbItemService {
 		HashSet<Integer> ids3 = null;
 		HashSet<Integer> ids4 = null;
 		if(select_cat!=""){
+			System.out.println("select_cat不不不不不不不为空空空空空空空空空空空空空空空");
 			//根据搜索信息查询分类
 			ids1 = tbItemMapper.findCid1ByCat(select_cat);
 			System.out.println("_______________第1次搜索__________________");
@@ -203,8 +204,14 @@ public class TbItemServiceImpl implements TbItemService {
 		for (String cName : categoryNames) {
 			CategoryStatistics categoryStatistics = new CategoryStatistics();
 			int cId = tbItemMapper.findCategoryIdName(cName);
-			List<Integer> cIds2 = tbItemMapper.findCid2ByCid(cId);
-			List<Integer> cIds3 = tbItemMapper.findCid3ByCid2(cIds2);
+			List<Integer> cIds1 = new ArrayList<>();
+			cIds1.add(cId);
+			List<Integer> cIds2 = tbItemMapper.findCid3ByCid2(cIds1);
+			List<Integer> cIds3 = cIds1;
+			while(cIds2.size()!=0){
+				cIds3 = cIds2;
+				cIds2 = tbItemMapper.findCid3ByCid2(cIds2);
+			}
 			Integer count = tbItemMapper.findCountByCid3(cIds3);
 			categoryStatistics.setName(cName+"("+count+")");
 			categoryStatistics.setValue(count);

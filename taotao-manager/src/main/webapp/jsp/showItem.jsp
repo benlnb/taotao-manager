@@ -10,10 +10,15 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath }/layui/dist/css/layui.css?t=1575889601627"
 	media="all">
+<style type="text/css">
+	body {
+		background-color: #FFFFFF;
+	}
+</style>
 </head>
 <body>
 	<div class="layui-input-block"
-		style="margin-left: 0px; float: left; position: relative;">
+		style="background-color:white;margin-left: 0px; float: left; position: relative;">
 		<input style="width: 150px;" type="text" id="select_title"
 			name="select_title" lay-verify="required" placeholder="请输入标题"
 			autocomplete="off" class="layui-input sss">
@@ -36,6 +41,8 @@
 
 	<table class="layui-hide" id="demo" lay-filter="test"
 		lay-data="{id: 'idTest'}"></table>
+		
+	
 	<script type="text/html" id="roleTpl">
 		{{# if (d.status=== 1) { }}   
   		正常

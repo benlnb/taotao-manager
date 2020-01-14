@@ -31,22 +31,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="findTbItemSize"
 		resultType="int">
 		select count(*) from tbitem where
-        concat(IFNULL(title,''),IFNULL(sellPoint,''))
-        like CONCAT (#{select_title},#{select_des})
+        title like #{select_title}
+		and
+		sellPoint like #{select_des}
 	</select>
 	<select id="findTbItemBy"
 		resultType="com.clive.bean.TbItem">
 		select * from tbitem where
-        concat(IFNULL(title,''),IFNULL(sellPoint,''))
-        like CONCAT (#{select_title},#{select_des})
+        title like #{select_title}
+		and
+		sellPoint like #{select_des}
          LIMIT #{page},#{limit};
 	</select>
 	
 	<select id="findTbItemSizeWithCids"
 		resultType="int">
 		select count(*) from tbitem where
-        concat(IFNULL(title,''),IFNULL(sellPoint,''))
-        like CONCAT (#{select_title},#{select_des})
+        title like #{select_title}
+		and
+		sellPoint like #{select_des}
         and cid in 
         <foreach collection="cIds" item="cId" open="(" close=")" separator=",">
 			#{cId}
@@ -55,8 +58,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="findTbItemByWithCids"
 		resultType="com.clive.bean.TbItem">
 		select * from tbitem where
-        concat(IFNULL(title,''),IFNULL(sellPoint,''))
-        like CONCAT (#{select_title},#{select_des})
+        title like #{select_title}
+		and
+		sellPoint like #{select_des}
         and cid in 
         <foreach collection="cIds" item="cId" open="(" close=")" separator=",">
 			#{cId}
@@ -114,11 +118,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="findCategoryIdName" resultType="int">
 		SELECT id FROM tbitemcat where name = #{cName} and parentId = 0
-	</select>
-	
-	<select id="findCid2ByCid"
-		resultType="int">
-		SELECT id FROM tbitemcat WHERE parentId = #{cId}
 	</select>
 	
 	<select id="findCid3ByCid2"
