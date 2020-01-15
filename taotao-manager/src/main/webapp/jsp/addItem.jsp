@@ -12,12 +12,16 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath }/css/zTreeStyle/zTreeStyle.css"
 	type="text/css">
+<link href="${pageContext.request.contextPath }/kindeditor/themes/simple/simple.css" rel="stylesheet"/>
+<script type="text/javascript" src="${pageContext.request.contextPath }/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath }/kindeditor/lang/zh-CN.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/js/jquery.ztree.core.min.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/js/jquery.ztree.excheck.min.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/js/jquery.ztree.exedit.min.js"></script>
+
 <style type="text/css">
 	body {
 		background-color: #FFFFFF;
@@ -88,15 +92,22 @@
 		</div>
 
 		<div class="layui-form-item">
+			<!--************这里添加的隐藏的输入框，用来传递images的参数***************-->
+   			<input type="hidden" name="images" class="image">
+			
 			<label class="layui-form-label">图片</label> <input type="hidden"
 				name="image" class="multiple_show_img" value="">
 			<div class="layui-upload">
-				<button type="button" class="layui-btn" id="multiple_img_upload">选择图片</button>
-				<button type="button" class="layui-btn" id="startUpload">开始上传</button>
+				<button type="button" style="float:left;" class="layui-btn layui-btn-radius layui-btn-primary" id="multiple_img_upload">选择图片</button>
+				&nbsp;&nbsp;
+				<button type="button" style="" class="layui-btn layui-btn-radius layui-btn-primary" id="startUpload">开始上传</button>
 				<blockquote class="layui-elem-quote layui-quote-nm"
-					style="margin-top: 10px;margin-left: 110px;">
+					style="margin-top: 10px;margin-left: 110px;float:left;width:88.6%">
 					预览：
 					<div class="layui-upload-list" id="div-slide_show"></div>
+					<input style="" type="text" id="multiple_show_img" name="multiple_show_img"
+						
+						class="layui-input">
 				</blockquote>
 			</div>
 		</div>
@@ -104,16 +115,21 @@
 
 
 		<div class="layui-form-item layui-form-text">
-			<label class="layui-form-label">商品描述</label>
+			<label class="layui-form-label">商品详情</label>
 			<div class="layui-input-block">
-				<textarea placeholder="请输入商品描述" class="layui-textarea"></textarea>
+				<!-- 隐藏的输入框 -->
+				<input style="display: none;" type="text" id="des" name="des" lay-verify="required"
+						autocomplete="off" placeholder="商品详情" class="layui-input">
+			    <textarea name="content1" style="width:660px;height:340px;visibility:hidden;">
+			   		<span style="color:#9B9B9B;">添加商品描述</span>
+			    </textarea>
+
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<div class="layui-input-block">
 				<button type="submit" class="layui-btn" id="example1" lay-submit=""
 					lay-filter="example1">立即提交</button>
-				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 			</div>
 		</div>
 	</form>
@@ -239,66 +255,67 @@
 		*/
 		var multiple_images = [];//图片容器
 		layui.use('upload', function () {
-		        var upload = layui.upload;
+		        var $ = layui.jquery,
+		        	upload = layui.upload;
 				//多图片上传
 		        upload.render({
 		            elem: '#multiple_img_upload'
+		            ,size: 10240
 		            ,url: '/item/picsUpload'
 		            ,auto: false
+		            ,bindAction: '#startUpload'
 		            ,multiple: true
 		            ,drag: true
-		            ,bindAction: '#startUpload'
 		            ,choose:function(obj){
 		            	var files = this.files = obj.pushFile();
 		            	
 		            	//预读本地文件示例，不支持ie8
 		                obj.preview(function(index, file, result){
-		                    $('#div-slide_show').append('<img style="margin-right:10px" height="120" width="120" src="'+ result +'" alt="'+ file.name
-		                        +'" title="点击删除" class="layui-upload-img" id="delMultipleImgs" value="this" οnclick="delMultipleImgs(this)">')
+		                    $('#div-slide_show').append('<div style="float:left;" class="image-container" id="container'+index+'"><div class="delete-css"></div>' +
+                        	'<img title="点击删除" id="showImg'+index+'" style="width: 140px;height: 140px; margin:10px;cursor:pointer;" src="'+ result +'" alt="'+ file.name +'" ></div>')
+                        	$("#showImg" + index).bind('click', function () {
+                                delete files[index];
+                                $("#container"+index).remove();
+                            });
 		                });
-		                multiple_images.push(obj.data.url);
-	                    $('.multiple_show_img').val(multiple_images);
-	                    alert(obj.data.url);
 		            }
 		            ,before: function(obj){
-		                
+		            	
 		            }
 		            ,done: function(res){
-		            	
-		                //如果上传成功
-		                if (res.status == 1) {
-		                    //追加图片成功追加文件名至图片容器
-		                    multiple_images.push(res.data.url);
-		                    $('.multiple_show_img').val(multiple_images);
-		                }else {
-		                	alert("aaa");
-		                	//提示信息
-		                    dialog.tip(res.message);
+		                var demoText = $('#startUpload');
+		            	 //如果上传失败
+		                if(res.code > 0){
+		                	demoText.html('<span style="color: red;">点击重试</span>');
+		                    return layer.msg('上传失败');
 		                }
+		                //上传成功
+		                layer.msg("成功");
+		                demoText.html('<span style="color: #4cae4c;">上传成功✔</span>');
+
+		                var urlurl = res.data.src;
+		                multiple_images.push(urlurl);
+		                $("#multiple_show_img").attr("value", multiple_images);
+		                //var fileupload = $(".image");
+		                //fileupload.attr("value",res.data.src);
+		                //console.log(fileupload.attr("value"));
+	                    //$('.multiple_show_img').val(multiple_images);
+		                
+	                    
+		            }
+		            ,error: function(){
+		                //演示失败状态，并实现重传
+		                layer.msg('error');
+		                var demoText = $('#startUpload');
+		                demoText.html('<span style="color: red;"> <a class="layui-btn layui-btn-xs demo-reload">上传失败，点击重试</a></span>');
+		                demoText.find('.demo-reload').on('click', function(){
+		                    uploadInst.upload();
+		                });
 		            }
 		        });
 
 		    });
 		
-		
-		//单击图片删除图片 【注册全局函数】
-		$(document).on('click','#delMultipleImgs',function(){
-			var subscript=$("#div-slide_show.img").index(this);
-			var i = $("#div-slide_show.img");
-			alert("subscript:"+subscript+"-----#div-slide_show.img:"+i);
-			alert("图片容器："+multiple_images);
-			//alert(this.src);
-	        //删除图片
-	        this.remove();
-	        //删除数组
-	        multiple_images.splice(subscript, 1);
-	        //重新排序
-	        multiple_images.sort();
-	        $('.multiple_show_img').val(multiple_images);
-	        //console.log("multiple_images",multiple_images);
-	        //返回
-	        return ;
-		});
 		
 		
 		
@@ -309,9 +326,42 @@
 		
 		
 		
-		
-		
-		
+		//富文本编辑器初始化
+		initKindEditor();
+		function initKindEditor(){ 
+			var keditor =  KindEditor.create('textarea[name="content1"]', {
+				themeType: "simple",
+				uploadJson: '/item/picsUpload',
+	            resizeType: 2,
+	            pasteType: 2,
+	            afterCreate: function () {
+	                this.sync();
+	            },
+	            afterFocus : function(){//获得焦点 删除默认文字信息
+			         if(keditor.html() == '<span style="color:#9B9B9B;">添加商品描述</span>'){
+			       	  keditor.html('');
+			         }
+			     },
+	            afterBlur: function () {
+	           	// console.log(editor.html());
+			        if(keditor.html() == '<br/>' || keditor.html() == ''){
+			       	 keditor.html('<span style="color:#9B9B9B;">添加商品描述</span>');
+			        }
+	             	var valuee = keditor.html();
+	            	$("#des").attr("value", valuee);
+	                this.sync();
+	            },
+	            afterChange: function () {
+	                //富文本输入区域的改变事件，一般用来编写统计字数等判断
+	            },
+	            afterUpload:function(url){
+	               //上传图片后的代码
+	               alert("afterUpload:function");
+	            },
+				//否允许浏览服务器已上传文件,默认是false
+	            allowFileManager: true
+	        });
+		};
 		
 		
 		

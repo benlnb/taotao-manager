@@ -5,6 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>添加商品分类</title>
+
 <style type="text/css">
 	body {
 		background-color: #FFFFFF;
@@ -15,7 +16,15 @@
 
 </head>
 <body>
-添加商品分类添加商品分类添加商品分类添加商品分类添加商品分类
+
+
+	添加商品分类添加商品分类添加商品分类添加商品分类添加商品分类
 	
+<script type="text/javascript">
+	
+
+	
+</script>
+
 </body>
 </html>

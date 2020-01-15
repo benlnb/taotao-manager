@@ -1,9 +1,16 @@
 package com.clive.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -117,31 +124,82 @@ public class TbItemController {
 	 * 多图上传
 	 */
 	@RequestMapping("/picsUpload")
-	//requestParam要写才知道是前台的那个数组
-	public String filesUpload(@RequestParam("multiple_images") MultipartFile[] files,
-			HttpServletRequest request) {
-		System.out.println("fileslength：：："+files.length);
-		for (MultipartFile multipartFile : files) {
-			System.out.println("multipartFile：：："+multipartFile);
-		}
-		System.out.println("进入");
-		
-		System.out.println("进入");
-		System.out.println("进入");
-		System.out.println("进入");
-		List<String> list = new ArrayList<String>();
-		if (files != null && files.length > 0) {
-			for (int i = 0; i < files.length; i++) {
-				MultipartFile file = files[i];
-				// 保存文件
-				//list = saveFile(request, file, list);
-			}
-		}
-		//写着测试，删了就可以
-		for (int i = 0; i < list.size(); i++) {
-			System.out.println("集合里面的数据" + list.get(i));
-		}
-		return "index";//跳转的页面
+	@ResponseBody
+	//requestParam要写才知道是前台的那个数组@RequestParam("delMultipleImgs") 
+	public Map<String,Object> filesUpload(MultipartFile file,HttpServletRequest request) {
+		String prefix="";
+        String dateStr="";
+        //保存上传
+        OutputStream out = null;
+        InputStream fileInput=null;
+        try{
+            if(file!=null){
+                String originalName = file.getOriginalFilename();
+                System.out.println("originalName"+originalName);
+                prefix=originalName.substring(originalName.lastIndexOf(".")+1);
+                Date date = new Date();
+                String uuid = UUID.randomUUID()+"";
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                dateStr = simpleDateFormat.format(date);
+                String filepath = "D:\\java\\pic\\" + dateStr+"\\"+uuid+"." + prefix;
+
+
+                File files=new File(filepath);
+                //打印查看上传路径
+                System.out.println(filepath);
+                if(!files.getParentFile().exists()){
+                    files.getParentFile().mkdirs();
+                }
+                file.transferTo(files);
+                Map<String,Object> map2=new HashMap<>();
+                Map<String,Object> map=new HashMap<>();
+                map.put("code",0);
+                map.put("msg","");
+                map.put("data",map2);
+                
+                //返回这样的src
+                map2.put("src","/images/"+ dateStr+"/"+uuid+"." + prefix);
+                System.out.println("mapmap="+map);
+                return map;
+            }
+
+        }catch (Exception e){
+        }finally{
+            try {
+                if(out!=null){
+                    out.close();
+                }
+                if(fileInput!=null){
+                    fileInput.close();
+                }
+            } catch (IOException e) {
+            }
+        }
+        Map<String,Object> map=new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        return map;
+
 	}
+	
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
